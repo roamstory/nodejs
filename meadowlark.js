@@ -1,26 +1,28 @@
 var express = require('express');
-
+var fortune = require('./lib/fortune.js');
+var logger = require('./lib/log.js').getLogger();
 var app = express();
 
 //핸들바 뷰 엔진 설정
 var handlebars = require('express-handlebars')
     .create({defaultLayout:'main'});
 app.engine('handlebars', handlebars.engine);
-var handlebarsPath = __dirname + '/views/layouts/';
 
-app.set('views', handlebarsPath);
+
 app.set('view engine', 'handlebars');
 app.set('port', process.env.PORT || 3000);
 
 app.use(express.static(__dirname+'/public'));
 
+
+
 app.get('/', function(req, res) {
-    console.log(__dirname+'/views/layouts/');
+    console.log(__dirname);
     res.render('home');
 });
 
 app.get('/about', function (req, res) {
-    res.render('about');
+    res.render('about', { fortune: fortune.getFortune() });
 });
 
 // 404 폴백 핸들러
@@ -38,5 +40,6 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(app.get('port'), function () {
-    console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
+    logger.info('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
+
